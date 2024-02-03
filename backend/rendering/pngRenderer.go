@@ -15,7 +15,7 @@ func New(w io.Writer) PngRenderer {
 	return PngRenderer{w}
 }
 
-func compose(branch vcs.Branch) {
+func compose(branch vcs.Branch) image.RGBA {
 	// TODO: build the image with size from the branch
 	picture := image.NewRGBA(image.Rect(0, 0, 8, 5))
 
@@ -27,6 +27,5 @@ func compose(branch vcs.Branch) {
 
 	}
 
-	return picture
-
+	return *picture
 }
