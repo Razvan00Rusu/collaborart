@@ -5,17 +5,17 @@ import (
 	"sync"
 )
 
-type pixelDiff struct {
+type PixelDiff struct {
 	x, y, dR, dG, dB, dA int16
 }
 
-type diff struct {
+type Diff struct {
 	commit       uuid.UUID
-	pixelChanges []pixelDiff
+	pixelChanges []PixelDiff
 }
 
 var lock = &sync.Mutex{}
 
 type commitHolder struct {
-	diffs map[uuid.UUID]pixelDiff
+	diffs map[uuid.UUID]PixelDiff
 }

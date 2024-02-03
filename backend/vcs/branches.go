@@ -4,15 +4,15 @@ import (
 	"github.com/google/uuid"
 )
 
-type branch struct {
+type Branch struct {
 	name        string
 	commits     []uuid.UUID
 	commitOrder map[uuid.UUID]int
 }
 
-func (b *branch) getName() string              { return b.name }
-func (b *branch) getCommit(idx uint) uuid.UUID { return b.commits[idx] }
-func (b *branch) getCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
+func (b *Branch) GetName() string              { return b.name }
+func (b *Branch) GetCommit(idx uint) uuid.UUID { return b.commits[idx] }
+func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
 	var ret []uuid.UUID = make([]uuid.UUID, 0)
 
 	if from == to {
