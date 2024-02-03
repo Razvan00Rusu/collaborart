@@ -22,10 +22,25 @@ func compose(branch vcs.Branch) image.RGBA {
 	for _, change := range branch.GetDiffsInBranch() {
 
 		for _, diff := range change.PixelChanges {
-			picture.Set(5, 5, color.RGBA{255, 0, 0, 255})
-		}
+			// I think there will be an issue with Alpha, but just ignore
+			x := int(diff.X)
+			y := int(diff.Y)
+			oldR, oldG, oldB, oldA := picture.At(x, y).RGBA()
+			newColor := color.RGBA{
+				uint8(int16(oldR) + diff.DR),
+				uint8(int16(oldG) + diff.DG),
+				uint8(int16(oldB) + diff.DB),
+				uint8(int16(oldA) + diff.DA),
+			}
 
+			picture.Set(
+				x,
+				y,
+				newColor,
+			)
+		}
 	}
 
+	// kinda cringe to copy this, change if relevant
 	return *picture
 }
