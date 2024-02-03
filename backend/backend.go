@@ -1,13 +1,17 @@
 package backend
 
 import (
+	"collaborart/backend/composedImage"
+	"collaborart/backend/vcs"
 	"collaborart/frontend"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
+	"image/jpeg"
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 func StartServer() {
@@ -118,6 +122,28 @@ func StartServer() {
 	e.Static("/public", "./frontend/public")
 
 	frontend.NewTemplateRenderer(e, "./frontend/templates/*.html")
+
+	log.Printf("before")
+	f, err := os.Create("img.jpg")
+	log.Printf("after")
+
+	vcs.CreateOrphanBranch("test")
+	var branches = vcs.GetBranchHolder()
+	branch := vcs.GetBranch("test")
+	pxDiff := vcs.PixelDiff{X: 1, Y: 1, DR: 255, DG: 255, DB: 255}
+	branch.AddCommit(append(make([]vcs.PixelDiff, 0), pxDiff))
+
+	target := composedImage.New(branches.Branches["test"])
+
+	if err != nil {
+		panic(err)
+	}
+
+	if err = jpeg.Encode(f, &target.Img, nil); err != nil {
+		log.Printf("failed to encode: %v", err)
+	}
+
+	f.Close()
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
