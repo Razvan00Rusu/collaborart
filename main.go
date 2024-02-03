@@ -8,6 +8,6 @@ import (
 
 func main() {
 	fmt.Println("Hello World!")
-	backend.BackEnd()
 	frontend.Frontend()
+	backend.StartServer()
 }
