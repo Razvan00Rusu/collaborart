@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
+	"io"
 	"log"
 	"net/http"
 )
@@ -28,19 +29,67 @@ func StartServer() {
 		if branchId == "" {
 			branchId = "main"
 		}
-		// TODO: Get list of branches
+		// TODO: Get list of branches and commits
 		branches := []string{"main"}
+		commits := []string{"First Commit"}
 
 		params := map[string]interface{}{
 			"BranchId": branchId,
 			"Branches": branches,
+			"Commits":  commits,
 		}
 
 		return c.Render(http.StatusOK, "index", params)
 	})
 
+	e.POST("/branch/upload", func(c echo.Context) error {
+		file, err := c.FormFile("file")
+		if err != nil {
+			return err
+		}
+		src, err := file.Open()
+		if err != nil {
+			return err
+		}
+		byteContainer, err := io.ReadAll(src)
+		log.Println(len(byteContainer))
+		return c.String(http.StatusOK, "")
+	})
+
 	e.GET("/branch/new_branch_settings", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "new_branch_settings", nil)
+	})
+
+	e.GET("/branch/upload_image_settings", func(c echo.Context) error {
+		return c.Render(http.StatusOK, "upload_image_settings", nil)
+	})
+
+	e.GET("/branch/merge_branch_settings", func(c echo.Context) error {
+		//TODO: Get branches!!
+		branches := []string{"main"}
+		params := map[string]interface{}{
+			"Branches": branches,
+		}
+		return c.Render(http.StatusOK, "merge_branch_settings", params)
+	})
+
+	e.GET("/branch/merge_preview", func(c echo.Context) error {
+
+		return c.String(http.StatusOK, "")
+	})
+
+	e.POST("/branch/merge_branches", func(c echo.Context) error {
+		mergingFrom := c.FormValue("merging_from")
+		if mergingFrom == "" {
+			return c.String(http.StatusBadRequest, "")
+		}
+		mergingTo := c.FormValue("merging_to")
+		if mergingTo == "" {
+			return c.String(http.StatusBadRequest, "")
+		}
+		// TODO: Create Image Preview!
+		log.Println("Merging from:", mergingFrom, "Merging Into:", mergingTo)
+		return c.String(http.StatusOK, "")
 	})
 
 	e.POST("/branch/create_new_branch", func(c echo.Context) error {
@@ -64,23 +113,6 @@ func StartServer() {
 
 		// TODO: Get the image to the client somehow - can be either as a byte array or straight from a file
 		return c.String(http.StatusNotImplemented, "Not implemented yet : )")
-	})
-
-	e.POST("/branch/push", func(c echo.Context) error {
-		c.QueryParam("ID")
-		return c.String(http.StatusOK, "branch-push")
-	})
-
-	e.POST("/checkout/commit", func(c echo.Context) error {
-		return c.String(http.StatusOK, "checkout-commit")
-	})
-
-	e.POST("/branch/new", func(c echo.Context) error {
-		return c.String(http.StatusOK, "branch-new")
-	})
-
-	e.POST("/merge", func(c echo.Context) error {
-		return c.String(http.StatusOK, "merge")
 	})
 
 	e.Static("/public", "./frontend/public")
