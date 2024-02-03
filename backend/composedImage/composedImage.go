@@ -4,20 +4,26 @@ import (
 	"collaborart/backend/vcs"
 	"image"
 	"image/color"
+	"log"
 )
 
 type composedImage struct {
 	Img image.RGBA
 }
 
-func New(branch vcs.Branch) composedImage {
+func New(branch *vcs.Branch) composedImage {
 
 	// TODO: build the image with size from the branch
 	picture := image.NewRGBA(image.Rect(0, 0, 8, 5))
 
 	for _, change := range branch.GetDiffsInBranch() {
 
+		log.Printf("A change")
+
 		for _, diff := range change.PixelChanges {
+
+			log.Printf("A diff")
+
 			// I think there will be an issue with Alpha, but just ignore
 			x := int(diff.X)
 			y := int(diff.Y)
