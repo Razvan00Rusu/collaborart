@@ -16,6 +16,24 @@ type Diff struct {
 
 var lock = &sync.Mutex{}
 
-type commitHolder struct {
-	diffs map[uuid.UUID]PixelDiff
+type CommitHolder struct {
+	diffs map[uuid.UUID]Diff
+}
+
+var commitHolderInstance *CommitHolder
+
+func GetCommitHolder() *CommitHolder {
+	if commitHolderInstance == nil {
+		lock.Lock()
+		defer lock.Unlock()
+		if commitHolderInstance == nil {
+			commitHolderInstance = &CommitHolder{}
+		}
+	}
+	return commitHolderInstance
+}
+
+func GetDiff(commit uuid.UUID) Diff {
+	var diffList = GetCommitHolder()
+	return diffList.diffs[commit]
 }
