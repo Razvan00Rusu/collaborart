@@ -21,7 +21,7 @@ func compose(branch vcs.Branch) image.RGBA {
 
 	for _, change := range branch.GetDiffsInBranch() {
 
-		for _, diff := range change {
+		for _, diff := range change.PixelChanges {
 			picture.Set(5, 5, color.RGBA{255, 0, 0, 255})
 		}
 
