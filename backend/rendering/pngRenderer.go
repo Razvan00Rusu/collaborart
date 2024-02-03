@@ -4,6 +4,7 @@ import (
 	"collaborart/backend/vcs"
 	"image"
 	"image/color"
+	"image/png"
 	"io"
 )
 
@@ -15,7 +16,8 @@ func New(w io.Writer) PngRenderer {
 	return PngRenderer{w}
 }
 
-func compose(branch vcs.Branch) image.RGBA {
+// can be done in interface?
+func (p PngRenderer) compose(branch vcs.Branch) image.RGBA {
 	// TODO: build the image with size from the branch
 	picture := image.NewRGBA(image.Rect(0, 0, 8, 5))
 
@@ -41,6 +43,10 @@ func compose(branch vcs.Branch) image.RGBA {
 		}
 	}
 
-	// kinda cringe to copy this, change if relevant
+	// kinda cringe to copy this, change if relevant. would be simple to just have it as a member, maybe can make this class for image instead of renderer
 	return *picture
+}
+
+func (p PngRenderer) render(img image.Image) error {
+	return png.Encode(p.w, img)
 }
