@@ -6,7 +6,7 @@ import (
 )
 
 type PixelDiff struct {
-	x, y, dR, dG, dB, dA int16
+	X, Y, DR, DG, DB, DA int16
 }
 
 type Diff struct {
