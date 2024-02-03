@@ -22,7 +22,7 @@ func GetBranchHolder() *BranchHolder {
 		lock.Lock()
 		defer lock.Unlock()
 		if branchHolderInstance == nil {
-			branchHolderInstance = &BranchHolder{}
+			branchHolderInstance = &BranchHolder{make(map[string]Branch)}
 		}
 	}
 	return branchHolderInstance
@@ -54,6 +54,7 @@ func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
 func (b *Branch) AddCommit(changes []PixelDiff) {
 	var newCommitId = CreateCommit(changes)
 	b.Commits = append(b.Commits, newCommitId)
+	b.CommitOrder[newCommitId] = len(b.Commits)
 }
 func (b *Branch) Clone(newName string) *Branch {
 	var br = &Branch{}
@@ -76,6 +77,11 @@ func BranchExists(name string) bool {
 	var branches = GetBranchHolder()
 	_, ok := branches.Branches[name]
 	return ok
+}
+
+func GetBranch(name string) Branch {
+	var branches = GetBranchHolder()
+	return branches.Branches[name]
 }
 
 func CreateOrphanBranch(name string) {
