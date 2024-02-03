@@ -40,6 +40,8 @@ func StartServer() {
 		return c.String(http.StatusOK, "merge")
 	})
 
+	e.Static("/public", "./frontend/public")
+
 	frontend.NewTemplateRenderer(e, "./frontend/templates/*.html")
 
 	e.Logger.Fatal(e.Start(":8000"))

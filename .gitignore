@@ -1,1 +1,7 @@
 .idea/
+node_modules/
+bin/
+
+frontend/public/styles/tailwind.css
+
+collaborart
