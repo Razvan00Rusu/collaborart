@@ -5,13 +5,13 @@ import (
 )
 
 type Branch struct {
-	name        string
-	commits     []uuid.UUID
-	commitOrder map[uuid.UUID]int
+	Name        string
+	Commits     []uuid.UUID
+	CommitOrder map[uuid.UUID]int
 }
 
 type BranchHolder struct {
-	branches map[string]Branch
+	Branches map[string]Branch
 }
 
 var branchHolderInstance *BranchHolder
@@ -31,14 +31,14 @@ func CreateNewBranch(name string, currentBranch string) {
 	var branches = GetBranchHolder()
 	val, currOk := branches.branches[currentBranch]
 	if currOk {
-		branches.branches[name] = val
+		branches.branches[name] = *val.Clone(name)
 	}
 }
 
 func (b *Branch) GetName() string              { return b.name }
 func (b *Branch) GetCommit(idx uint) uuid.UUID { return b.commits[idx] }
 func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
-	var ret []uuid.UUID = make([]uuid.UUID, 0)
+	var ret = make([]uuid.UUID, 0)
 
 	if from == to {
 		return append(ret, from)
