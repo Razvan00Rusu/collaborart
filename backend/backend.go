@@ -25,6 +25,7 @@ func StartServer() {
 	})
 
 	e.POST("/branch/push", func(c echo.Context) error {
+		c.QueryParam("ID")
 		return c.String(http.StatusOK, "branch-push")
 	})
 
