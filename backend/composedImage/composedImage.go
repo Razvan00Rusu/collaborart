@@ -7,7 +7,7 @@ import (
 )
 
 type composedImage struct {
-	img image.RGBA
+	Img image.RGBA
 }
 
 func New(branch vcs.Branch) composedImage {
@@ -37,5 +37,5 @@ func New(branch vcs.Branch) composedImage {
 		}
 	}
 
-	return composedImage{img: *picture}
+	return composedImage{Img: *picture}
 }
