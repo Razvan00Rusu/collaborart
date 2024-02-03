@@ -24,6 +24,22 @@ func StartServer() {
 		return c.Render(http.StatusOK, "index", params)
 	})
 
+	e.POST("/branch/push", func(c echo.Context) error {
+		return c.String(http.StatusOK, "branch-push")
+	})
+
+	e.POST("/checkout/commit", func(c echo.Context) error {
+		return c.String(http.StatusOK, "checkout-commit")
+	})
+
+	e.POST("/branch/new", func(c echo.Context) error {
+		return c.String(http.StatusOK, "branch-new")
+	})
+
+	e.POST("/merge", func(c echo.Context) error {
+		return c.String(http.StatusOK, "merge")
+	})
+
 	frontend.NewTemplateRenderer(e, "./frontend/templates/*.html")
 
 	e.Logger.Fatal(e.Start(":8000"))
