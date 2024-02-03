@@ -5,13 +5,13 @@ import (
 )
 
 type Branch struct {
-	name        string
-	commits     []uuid.UUID
-	commitOrder map[uuid.UUID]int
+	Name        string
+	Commits     []uuid.UUID
+	CommitOrder map[uuid.UUID]int
 }
 
 type BranchHolder struct {
-	branches map[string]Branch
+	Branches map[string]Branch
 }
 
 var branchHolderInstance *BranchHolder
@@ -29,39 +29,39 @@ func GetBranchHolder() *BranchHolder {
 
 func CreateNewBranch(name string, currentBranch string) {
 	var branches = GetBranchHolder()
-	val, currOk := branches.branches[currentBranch]
+	val, currOk := branches.Branches[currentBranch]
 	if currOk {
-		branches.branches[name] = val
+		branches.Branches[name] = *val.Clone(name)
 	}
 }
 
-func (b *Branch) GetName() string              { return b.name }
-func (b *Branch) GetCommit(idx uint) uuid.UUID { return b.commits[idx] }
+func (b *Branch) GetName() string              { return b.Name }
+func (b *Branch) GetCommit(idx uint) uuid.UUID { return b.Commits[idx] }
 func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
-	var ret []uuid.UUID = make([]uuid.UUID, 0)
+	var ret = make([]uuid.UUID, 0)
 
 	if from == to {
 		return append(ret, from)
 	}
 
-	var fromNum = b.commitOrder[from]
-	var toNum = b.commitOrder[to]
+	var fromNum = b.CommitOrder[from]
+	var toNum = b.CommitOrder[to]
 	var first = min(fromNum, toNum)
 	var last = max(fromNum, toNum)
-	return b.commits[first : last+1]
+	return b.Commits[first : last+1]
 }
 func (b *Branch) Clone(newName string) *Branch {
 	var br = &Branch{}
-	br.name = newName
-	copy(br.commits, b.commits)
-	for k, v := range b.commitOrder {
-		br.commitOrder[k] = v
+	br.Name = newName
+	copy(br.Commits, b.Commits)
+	for k, v := range b.CommitOrder {
+		br.CommitOrder[k] = v
 	}
 	return br
 }
 func (b *Branch) GetDiffsInBranch() []Diff {
 	var diffs = make([]Diff, 0)
-	for _, v := range b.commits {
+	for _, v := range b.Commits {
 		diffs = append(diffs, GetDiff(v))
 	}
 	return diffs

@@ -10,14 +10,14 @@ type PixelDiff struct {
 }
 
 type Diff struct {
-	commit       uuid.UUID
-	pixelChanges []PixelDiff
+	Commit       uuid.UUID
+	PixelChanges []PixelDiff
 }
 
 var lock = &sync.Mutex{}
 
 type CommitHolder struct {
-	diffs map[uuid.UUID]Diff
+	Diffs map[uuid.UUID]Diff
 }
 
 var commitHolderInstance *CommitHolder
@@ -35,5 +35,5 @@ func GetCommitHolder() *CommitHolder {
 
 func GetDiff(commit uuid.UUID) Diff {
 	var diffList = GetCommitHolder()
-	return diffList.diffs[commit]
+	return diffList.Diffs[commit]
 }
