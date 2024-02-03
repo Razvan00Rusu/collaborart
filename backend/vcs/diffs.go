@@ -35,5 +35,5 @@ func GetCommitHolder() *CommitHolder {
 
 func GetDiff(commit uuid.UUID) Diff {
 	var diffList = GetCommitHolder()
-	return diffList.diffs[commit]
+	return diffList.Diffs[commit]
 }
