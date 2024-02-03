@@ -2,22 +2,57 @@
 <html>
 {{template "common-head" .}}
 <body class="p-4 space-y-4">
+    <h1 class="font-bold text-xl">COLLABORART</h1>
     <div class="flex flex-row justify-between">
-        <div>
-            <select id="countries" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option value="US">Main</option>
-                <option value="CA">feature 1</option>
-                <option value="FR">feature 2</option>
-                <option value="DE">feature 3</option>
-            </select>
+        <div class="flex flex-row gap-2">
+            <div>
+                <select id="branch" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    {{range $i, $v := .Branches}}
+                    <option value="{{$v}}">{{$v}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div>
+                <select id="commits" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    {{range $i, $v := .Commits}}
+                    <option value="{{$i}}">{{$v}}</option>
+                    {{end}}
+                </select>
+            </div>
         </div>
         <div>
-            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">New Branch</button>
-            <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">Upload</button>
+            <button
+                    type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    hx-get="/branch/new_branch_settings"
+                    hx-target="#settings"
+            >New Branch</button>
+            <button
+                    type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    hx-get="/branch/upload_image_settings"
+                    hx-target="#settings"
+            >Upload new image</button>
+            <button
+                    type="button"
+                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    hx-get="/branch/merge_branch_settings"
+                    hx-target="#settings"
+            >Merge to branch</button>
         </div>
     </div>
 
-    <div class="h-[512px] w-[720px] px-4 border-2 border-black">
+    <div id="settings">
+
+    </div>
+
+
+    <h2 class="font-semibold text-lg">Image Preview</h2>
+    <button
+            type="button"
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+    >Download Image</button>
+    <div class="h-[512px] w-[720px] px-4 border-2 border-black" hx-get="/branch/preview?branchId={{ .BranchId }}" hx-trigger="load">
         Image preview
     </div>
 
