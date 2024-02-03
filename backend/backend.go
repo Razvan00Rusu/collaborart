@@ -43,6 +43,18 @@ func StartServer() {
 		return c.Render(http.StatusOK, "new_branch_settings", nil)
 	})
 
+	e.POST("/branch/create_new_branch", func(c echo.Context) error {
+		branchName := c.FormValue("branch_name")
+
+		if branchName == "" {
+			return c.String(http.StatusBadRequest, "")
+		}
+
+		//TODO: Create new branch
+		log.Println("Create new branch!", branchName)
+		return c.String(http.StatusCreated, "")
+	})
+
 	e.GET("/branch/preview", func(c echo.Context) error {
 		branchId := c.QueryParam("branchId")
 
