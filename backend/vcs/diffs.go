@@ -51,3 +51,12 @@ func CreateCommit(changes []PixelDiff) uuid.UUID {
 	commits.Diffs[commitId] = newCommit
 	return commitId
 }
+
+func SquashCommitsToPixelChanges(commits []uuid.UUID) []PixelDiff {
+	var pixelDiffs = make([]PixelDiff, 0)
+	for _, v := range commits {
+		var diff = GetDiff(v)
+		pixelDiffs = append(pixelDiffs, diff.PixelChanges...)
+	}
+	return pixelDiffs
+}
