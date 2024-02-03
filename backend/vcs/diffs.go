@@ -37,3 +37,14 @@ func GetDiff(commit uuid.UUID) Diff {
 	var diffList = GetCommitHolder()
 	return diffList.Diffs[commit]
 }
+
+func CreateCommit(changes []PixelDiff) uuid.UUID {
+	var commitId = uuid.New()
+	var commits = GetCommitHolder()
+	var newCommit = Diff{
+		Commit:       commitId,
+		PixelChanges: changes,
+	}
+	commits.Diffs[commitId] = newCommit
+	return commitId
+}

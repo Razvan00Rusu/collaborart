@@ -5,9 +5,10 @@ import (
 )
 
 type Branch struct {
-	Name        string
-	Commits     []uuid.UUID
-	CommitOrder map[uuid.UUID]int
+	Name          string
+	Commits       []uuid.UUID
+	CommitOrder   map[uuid.UUID]int
+	Width, Height int16
 }
 
 type BranchHolder struct {
@@ -50,6 +51,10 @@ func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
 	var last = max(fromNum, toNum)
 	return b.Commits[first : last+1]
 }
+func (b *Branch) AddCommit(changes []PixelDiff) {
+	var newCommitId = CreateCommit(changes)
+	b.Commits = append(b.Commits, newCommitId)
+}
 func (b *Branch) Clone(newName string) *Branch {
 	var br = &Branch{}
 	br.Name = newName
@@ -65,4 +70,26 @@ func (b *Branch) GetDiffsInBranch() []Diff {
 		diffs = append(diffs, GetDiff(v))
 	}
 	return diffs
+}
+
+func BranchExists(name string) bool {
+	var branches = GetBranchHolder()
+	_, ok := branches.Branches[name]
+	return ok
+}
+
+func CreateOrphanBranch(name string) {
+	if BranchExists(name) {
+		panic("Branch already exists!")
+	}
+	var branches = GetBranchHolder()
+	var newCommit = CreateCommit(nil)
+	var mainBranch = Branch{
+		Name:        name,
+		Commits:     append(make([]uuid.UUID, 0), newCommit),
+		CommitOrder: map[uuid.UUID]int{newCommit: 0},
+		Width:       0,
+		Height:      0,
+	}
+	branches.Branches[name] = mainBranch
 }
