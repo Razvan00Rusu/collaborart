@@ -79,9 +79,13 @@ func BranchExists(name string) bool {
 	return ok
 }
 
-func GetBranch(name string) Branch {
+func GetBranch(name string) *Branch {
 	var branches = GetBranchHolder()
-	return branches.Branches[name]
+	var b, ok = branches.Branches[name]
+	if ok {
+		return &b
+	}
+	return nil
 }
 
 func CreateOrphanBranch(name string) {
