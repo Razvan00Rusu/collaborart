@@ -3,6 +3,7 @@ package vcs
 import (
 	"github.com/google/uuid"
 	"sync"
+	"time"
 )
 
 type PixelDiff struct {
@@ -12,6 +13,7 @@ type PixelDiff struct {
 type Diff struct {
 	Commit       uuid.UUID
 	PixelChanges []PixelDiff
+	Timestamp    time.Time
 }
 
 var lock = &sync.Mutex{}
@@ -27,7 +29,7 @@ func GetCommitHolder() *CommitHolder {
 		lock.Lock()
 		defer lock.Unlock()
 		if commitHolderInstance == nil {
-			commitHolderInstance = &CommitHolder{}
+			commitHolderInstance = &CommitHolder{make(map[uuid.UUID]Diff)}
 		}
 	}
 	return commitHolderInstance
@@ -44,6 +46,7 @@ func CreateCommit(changes []PixelDiff) uuid.UUID {
 	var newCommit = Diff{
 		Commit:       commitId,
 		PixelChanges: changes,
+		Timestamp:    time.Now(),
 	}
 	commits.Diffs[commitId] = newCommit
 	return commitId

@@ -2,24 +2,23 @@ package backend
 
 import (
 	"collaborart/backend/vcs"
-	"github.com/google/uuid"
 )
 
-func PushToBranch(branch string, image []byte) {
-	if vcs.BranchExists(branch) {
-		var changes []vcs.PixelDiff = // TODO Get diff between this image and tip of branch
+//func PushToBranch(branch string, image []byte) {
+//	if vcs.BranchExists(branch) {
+//		var changes []vcs.PixelDiff = // TODO Get diff between this image and tip of branch
+//
+//	} else {
+//		vcs.CreateOrphanBranch(branch)
+//	}
+//}
 
-	} else {
-		vcs.CreateOrphanBranch(branch)
-	}
-}
+//func CheckoutCommit(branch string, commit uuid.UUID) []byte {
+//
+//}
 
-func CheckoutCommit(branch string, commit uuid.UUID) []byte {
-
-}
-
-func CreateNewBranch(current string, new string) {
-
+func CreateNewBranch(newBranch string, currentBranch string) {
+	vcs.CreateNewBranch(newBranch, currentBranch)
 }
 
 func Merge(from string, into string) {
