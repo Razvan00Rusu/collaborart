@@ -147,29 +147,23 @@ func AnalyseChanges(theirs []PixelDiff, ours []PixelDiff) ([]PixelDiff, []PixelD
 			v, ok := mapTheirs[thing]
 			if ok {
 				theirConflicts = append(theirConflicts, v)
+				delete(mapTheirs, thing)
 			}
-			v2, ok2 := mapTheirs[thing]
+			v2, ok2 := mapOurs[thing]
 			if ok2 {
 				ourConflicts = append(ourConflicts, v2)
+				delete(mapOurs, thing)
 			}
 		}
 	})
 
 	noConflictsPixels := make([]PixelDiff, 0)
-	nonConflicts := setTheirs.Difference(setOurs)
-	nonConflicts.Do(func(pt interface{}) {
-		switch thing := pt.(type) {
-		case Point:
-			v, ok := mapTheirs[thing]
-			if ok {
-				noConflictsPixels = append(theirConflicts, v)
-			}
-			v2, ok2 := mapTheirs[thing]
-			if ok2 {
-				noConflictsPixels = append(ourConflicts, v2)
-			}
-		}
-	})
+	for _, v := range mapTheirs {
+		noConflictsPixels = append(noConflictsPixels, v)
+	}
+	for _, v := range mapOurs {
+		noConflictsPixels = append(noConflictsPixels, v)
+	}
 
 	return theirConflicts, ourConflicts, noConflictsPixels
 
