@@ -14,7 +14,7 @@ type composedImage struct {
 func New(branch *vcs.Branch) composedImage {
 
 	// TODO: build the image with size from the branch
-	picture := image.NewRGBA(image.Rect(0, 0, 8, 5))
+	picture := image.NewRGBA(image.Rect(0, 0, int(branch.Width), int(branch.Height)))
 
 	for _, change := range branch.GetDiffsInBranch() {
 
