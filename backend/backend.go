@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
 	"image"
-	"image/jpeg"
+	"image/png"
 	"log"
 	"net/http"
 )
@@ -161,7 +161,7 @@ func StartServer() {
 
 		//c.Response().Header().Set("Content-Type", "image/jpeg")
 		buf := new(bytes.Buffer)
-		if err := jpeg.Encode(buf, &target.Img, &jpeg.Options{Quality: 100}); err != nil {
+		if err := png.Encode(buf, &target.Img); err != nil {
 			log.Printf("failed to encode: %v", err)
 		}
 		image := buf.Bytes()
