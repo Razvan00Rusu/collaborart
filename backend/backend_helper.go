@@ -6,10 +6,9 @@ import (
 	"image"
 	"image/jpeg"
 	"log"
-	"os"
 )
 
-func PushToBranch(branchId string, imageFile *os.File) {
+func PushToBranch(branchId string, imageFile *image.Image) {
 	img, _ := jpeg.Decode(imageFile)
 	var imgRGB image.RGBA
 	if x, ok := img.(*image.RGBA); ok {

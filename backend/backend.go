@@ -11,11 +11,10 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
+	"image"
 	"image/jpeg"
-	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 func StartServer() {
@@ -70,23 +69,15 @@ func StartServer() {
 		}
 		defer src.Close()
 
-		dst, err := os.Create(file.Filename)
+		img, str, err := image.Decode(src)
 		if err != nil {
 			return err
 		}
-		defer dst.Close()
 
-		// Copy
-		if _, err = io.Copy(dst, src); err != nil {
-			return err
-		}
+		fmt.Println(img, str, err)
 
-		dstInfo, _ := dst.Stat()
-		log.Println("Info!!!", dstInfo.Size(), dstInfo.Name())
-		if _, err = io.Copy(dst, src); err != nil {
-			return err
-		}
-		PushToBranch(branchName, dst)
+		log.Println("Info!!!", img.Bounds(), str, err)
+		PushToBranch(branchName, &img)
 
 		return c.String(http.StatusOK, "")
 	})
