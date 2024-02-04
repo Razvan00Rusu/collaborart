@@ -24,13 +24,13 @@
             <button
                     type="button"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    hx-get="/branch/new_branch_settings"
+                    hx-get="/branch/new_branch_settings?bid={{ .BranchId }}"
                     hx-target="#settings"
             >New Branch</button>
             <button
                     type="button"
                     class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
-                    hx-get="/branch/upload_image_settings"
+                    hx-get="/branch/upload_image_settings?bid={{ .BranchId }}"
                     hx-target="#settings"
             >Upload new image</button>
             <button
@@ -52,12 +52,10 @@
             type="button"
             class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
     >Download Image</button>
-    <div class="h-[512px] w-[720px] px-4 border-2 border-black" hx-get="/branch/preview?branchId={{ .BranchId }}" hx-trigger="load">
-        Image preview
+    <div id="preview">
+        <img class="h-[512px] w-[720px] px-4 border-2 border-black" hx-get="/branch/preview?bid={{ .BranchId }}" hx-trigger="load" hx-target="#preview" hx-swap="innerHTML" alt="Sad">
+
     </div>
-
-
-
 </body>
 </html>
 {{end}}
