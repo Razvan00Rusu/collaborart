@@ -111,6 +111,49 @@ func StartServer() {
 		return c.Render(http.StatusOK, "new_branch_settings", params)
 	})
 
+	e.GET("/branch/checkout_commit_settings", func(c echo.Context) error {
+		branchName := c.QueryParam("bid")
+		log.Println("Branch name:", branchName)
+		branch, err := vcs.GetBranch(branchName)
+		if err != nil {
+			return c.String(http.StatusBadRequest, "")
+		}
+		params := map[string]interface{}{
+			"BranchName": branchName,
+			"Commits":    branch.Commits,
+		}
+		return c.Render(http.StatusOK, "checkout_commit_settings", params)
+	})
+
+	e.POST("/branch/checkout_commit", func(c echo.Context) error {
+		commitId := c.FormValue("checkout_commit")
+		bid := c.FormValue("branchId")
+		direction := c.FormValue("checkout_direction")
+
+		if commitId == "" {
+			return c.String(http.StatusBadRequest, "")
+		}
+		var composedImage composedImage.ComposedImage
+		if direction == "from" {
+			composedImage = CheckoutCommit(bid, uuid.MustParse(commitId), true)
+		} else {
+			composedImage = CheckoutCommit(bid, uuid.MustParse(commitId), false)
+		}
+
+		buf := new(bytes.Buffer)
+		if err := png.Encode(buf, &composedImage.Img); err != nil {
+			log.Printf("failed to encode: %v", err)
+		}
+		image := buf.Bytes()
+		imgBase64Str := base64.StdEncoding.EncodeToString(image)
+		//fmt.Println("Commits", branch.Commits)
+		params := map[string]interface{}{
+			//"Commits":  branch.Commits,
+			"Encoding": imgBase64Str,
+		}
+		return c.Render(http.StatusOK, "preview", params)
+	})
+
 	e.GET("/branch/upload_image_settings", func(c echo.Context) error {
 		branchName := c.QueryParam("bid")
 		log.Println("Branch name:", branchName)
