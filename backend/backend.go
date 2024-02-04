@@ -128,9 +128,42 @@ func StartServer() {
 		return c.Render(http.StatusOK, "merge_branch_settings", params)
 	})
 
-	e.GET("/branch/merge_preview", func(c echo.Context) error {
-		//TODO: Acc do this
-		return c.String(http.StatusOK, "")
+	e.POST("/branch/merge_preview", func(c echo.Context) error {
+		mergingFrom := c.FormValue("merging_from")
+		mergingTo := c.FormValue("merging_to")
+		preference := c.FormValue("merge_preference")
+
+		mergedKeepFrom, mergedKeepTo := MergePreview(mergingFrom, mergingTo)
+		targetBranch, _ := vcs.GetBranch(mergingTo)
+
+		var mergedImage composedImage.ComposedImage
+
+		if preference == "from" {
+			mergedImage := composedImage.New(
+				int(targetBranch.Width),
+				int(targetBranch.Height),
+				mergedKeepFrom)
+		} else if preference == "to" {
+			mergedImage := composedImage.New(
+				int(targetBranch.Width),
+				int(targetBranch.Height),
+				mergedKeepTo)
+		} else {
+			return c.String(http.StatusBadRequest, "")
+		}
+
+		buf := new(bytes.Buffer)
+		if err := png.Encode(buf, &mergedImage.Img); err != nil {
+			log.Printf("failed to encode: %v", err)
+		}
+		image := buf.Bytes()
+		imgBase64Str := base64.StdEncoding.EncodeToString(image)
+		//fmt.Println("base64 encoding", imgBase64Str)
+
+		params := map[string]interface{}{
+			"Encoding": imgBase64Str,
+		}
+		return c.Render(http.StatusOK, "preview", params)
 	})
 
 	e.POST("/branch/merge_branches", func(c echo.Context) error {
@@ -176,7 +209,7 @@ func StartServer() {
 			return c.String(http.StatusBadRequest, "")
 		}
 
-		target := composedImage.New(branchDetails)
+		target := composedImage.New(int(branchDetails.Width), int(branchDetails.Height), branchDetails.GetDiffsInBranch())
 
 		//fmt.Println("target Img", target.Img)
 

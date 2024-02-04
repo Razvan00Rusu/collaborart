@@ -4,22 +4,20 @@ import (
 	"collaborart/backend/vcs"
 	"image"
 	"image/color"
-	"log"
 )
 
-type composedImage struct {
+type ComposedImage struct {
 	Img image.RGBA
 }
 
-func New(branch *vcs.Branch) composedImage {
+func New(width int, height int, diffs []vcs.Diff) ComposedImage {
 
-	// TODO: build the image with size from the branch
-	picture := image.NewRGBA(image.Rect(0, 0, int(branch.Width), int(branch.Height)))
+	picture := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	branchDiffs := branch.GetDiffsInBranch()
-	log.Printf("Image combosed from branch? %d, %s, %d, %d", len(branch.Commits), branch.Name, len(branchDiffs), len(branchDiffs[0].PixelChanges))
+	//branchDiffs := branch.GetDiffsInBranch()
+	//log.Printf("Image combosed from branch? %d, %s, %d, %d", len(branch.Commits), branch.Name, len(branchDiffs), len(branchDiffs[0].PixelChanges))
 
-	for _, change := range branch.GetDiffsInBranch() {
+	for _, change := range diffs {
 
 		//log.Printf("A change")
 
@@ -45,5 +43,5 @@ func New(branch *vcs.Branch) composedImage {
 		}
 	}
 
-	return composedImage{Img: *picture}
+	return ComposedImage{Img: *picture}
 }
