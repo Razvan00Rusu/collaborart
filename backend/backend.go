@@ -115,15 +115,15 @@ func StartServer() {
 	})
 
 	e.POST("/branch/create_new_branch", func(c echo.Context) error {
-		currentBranchName := c.QueryParam("bid")
-		branchName := c.FormValue("branch_name")
-
-		if branchName == "" || currentBranchName == "" {
+		oldBranchName := c.FormValue("old_branch")
+		newBranchName := c.FormValue("new_branch")
+		log.Println("old branch", oldBranchName, "new branch", newBranchName)
+		if newBranchName == "" || oldBranchName == "" {
 			return c.String(http.StatusBadRequest, "")
 		}
 
-		CreateNewBranch(branchName, currentBranchName)
-		log.Println("Created new branch:", branchName, "From branch:", currentBranchName)
+		CreateNewBranch(newBranchName, oldBranchName)
+		log.Println("Created new branch:", newBranchName, "From branch:", oldBranchName)
 		c.Response().Header().Add("HX-Refresh", "true")
 		return c.String(http.StatusCreated, "")
 	})
