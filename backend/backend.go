@@ -1,10 +1,13 @@
 package backend
 
 import (
+	"collaborart/backend/composedImage"
+	"collaborart/backend/vcs"
 	"collaborart/frontend"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
+	"image/jpeg"
 	"io"
 	"log"
 	"net/http"
@@ -106,13 +109,22 @@ func StartServer() {
 
 	e.GET("/branch/preview", func(c echo.Context) error {
 		branchId := c.QueryParam("branchId")
-
+		log.Println("Branch id", branchId)
 		if branchId == "" {
 			return c.String(http.StatusInternalServerError, "Missing branch id")
 		}
 
-		// TODO: Get the image to the client somehow - can be either as a byte array or straight from a file
-		return c.String(http.StatusNotImplemented, "Not implemented yet : )")
+		branch := vcs.GetBranch(branchId)
+
+		target := composedImage.New(branch)
+
+		w := c.Response().Writer
+
+		if err := jpeg.Encode(w, &target.Img, &jpeg.Options{Quality: 100}); err != nil {
+			log.Printf("failed to encode: %v", err)
+		}
+
+		return c.String(http.StatusOK, "")
 	})
 
 	e.Static("/public", "./frontend/public")
