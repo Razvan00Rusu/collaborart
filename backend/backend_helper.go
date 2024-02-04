@@ -22,7 +22,18 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 }
 
 func Merge(from string, into string) {
-
+	// Find common commit
+	fromBranch := vcs.GetBranch(from)
+	toBranch := vcs.GetBranch(into)
+	fromCommits := fromBranch.Commits
+	toCommits := toBranch.Commits
+	i := 0
+	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
+		i++
+	}
+	commitsToAdd := fromCommits[i:]
+	changes := vcs.SquashCommitsToPixelChanges(commitsToAdd)
+	toBranch.AddCommit(changes)
 }
 
 func GetBranchNames() []string {
