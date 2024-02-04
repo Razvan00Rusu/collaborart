@@ -27,17 +27,30 @@ func StartServer() {
 	)))
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Redirect(http.StatusSeeOther, "/branch?bid=main")
+		return c.Redirect(http.StatusSeeOther, "/branch")
+	})
+
+	e.GET("/branch/checkout_new_branch", func(c echo.Context) error {
+		bid := c.QueryParam("bid")
+		log.Println("Checkout new branch", bid)
+		c.Response().Header().Add("HX-Redirect", "/branch?bid="+bid)
+		return c.Redirect(http.StatusSeeOther, "/branch?bid="+bid)
+	})
+
+	e.POST("/branch/checkout_branch", func(c echo.Context) error {
+		bid := c.FormValue("bid")
+		fmt.Println("Checking out: ", bid)
+		c.Response().Header().Add("HX-Push-Url", "/branch?bid="+bid)
+		return c.Redirect(http.StatusSeeOther, "/branch?bid="+bid)
 	})
 
 	e.GET("/branch", func(c echo.Context) error {
 		branchName := c.QueryParam("bid")
 		log.Println("branchID", branchName)
-		if branchName == "" {
-			branchName = "main"
-		}
-		// TODO: Get list of branches and commits
+
+		//var branches []string
 		branches := GetBranchNames()
+		log.Println("branches found", branches)
 		branchDetails, branchFound := vcs.GetBranch(branchName)
 
 		var commits []uuid.UUID
@@ -52,6 +65,13 @@ func StartServer() {
 		}
 
 		return c.Render(http.StatusOK, "index", params)
+	})
+
+	e.GET("/branch/change_branch_settings", func(c echo.Context) error {
+		params := map[string]interface{}{
+			"Branches": GetBranchNames(),
+		}
+		return c.Render(http.StatusOK, "change_branch_settings", params)
 	})
 
 	e.POST("/branch/upload", func(c echo.Context) error {
@@ -78,7 +98,7 @@ func StartServer() {
 
 		log.Println("Info!!!", img.Bounds(), str, err)
 		PushToBranch(branchName, &img)
-
+		c.Response().Header().Add("HX-Refresh", "true")
 		return c.String(http.StatusOK, "")
 	})
 
@@ -124,6 +144,7 @@ func StartServer() {
 		}
 		log.Println("Merging from:", mergingFrom, "Merging Into:", mergingTo)
 		Merge(mergingFrom, mergingTo)
+		c.Response().Header().Add("HX-Refresh", "true")
 		return c.String(http.StatusOK, "")
 	})
 
@@ -131,7 +152,7 @@ func StartServer() {
 		oldBranchName := c.FormValue("old_branch")
 		newBranchName := c.FormValue("new_branch")
 		log.Println("old branch", oldBranchName, "new branch", newBranchName)
-		if newBranchName == "" || oldBranchName == "" {
+		if newBranchName == "" {
 			return c.String(http.StatusBadRequest, "")
 		}
 

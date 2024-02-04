@@ -1,8 +1,8 @@
 .idea/
 node_modules/
 bin/
-.DS_Store/
-frontend/.DS_Store/
+.DS_Store
+frontend/.DS_Store
 
 frontend/public/styles/tailwind.css
 
