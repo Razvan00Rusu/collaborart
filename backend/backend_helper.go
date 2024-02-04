@@ -67,7 +67,11 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 	}
 }
 
-func Merge(from string, into string) {
+func MergePreview(from string, into string) ([]vcs.Diff, []vcs.Diff) {
+
+}
+
+func Merge(from string, into string, useTheirs bool) {
 	// Find common commit
 	fromBranch, err := vcs.GetBranch(from)
 	if err != nil {
