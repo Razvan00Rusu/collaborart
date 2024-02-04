@@ -31,8 +31,8 @@ func Merge(from string, into string) {
 	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
 		i++
 	}
-	var commitsToAdd = fromCommits[i:]
-	var changes = vcs.SquashCommitsToPixelChanges(commitsToAdd)
+	commitsToAdd := fromCommits[i:]
+	changes := vcs.SquashCommitsToPixelChanges(commitsToAdd)
 	toBranch.AddCommit(changes)
 }
 
