@@ -3,6 +3,7 @@ package vcs
 import (
 	"github.com/google/uuid"
 	"image"
+	"log"
 	"sync"
 	"time"
 )
@@ -20,7 +21,7 @@ type Diff struct {
 var lock = &sync.Mutex{}
 
 type CommitHolder struct {
-	Diffs map[uuid.UUID]Diff
+	Diffs map[uuid.UUID]*Diff
 }
 
 var commitHolderInstance *CommitHolder
@@ -30,13 +31,13 @@ func GetCommitHolder() *CommitHolder {
 		lock.Lock()
 		defer lock.Unlock()
 		if commitHolderInstance == nil {
-			commitHolderInstance = &CommitHolder{make(map[uuid.UUID]Diff)}
+			commitHolderInstance = &CommitHolder{make(map[uuid.UUID]*Diff)}
 		}
 	}
 	return commitHolderInstance
 }
 
-func GetDiff(commit uuid.UUID) Diff {
+func GetDiff(commit uuid.UUID) *Diff {
 	var diffList = GetCommitHolder()
 	return diffList.Diffs[commit]
 }
@@ -49,7 +50,9 @@ func CreateInitialDiff(image image.RGBA) []PixelDiff {
 	yMax := bounds.Max.Y
 	yMin := bounds.Min.Y
 
-	diffs := make([]PixelDiff, (xMax-xMin)*(yMin-xMax))
+	log.Printf("New image bounds: %d, %d, %d, %d", xMin, xMax, yMin, yMax)
+
+	diffs := make([]PixelDiff, (xMax-xMin)*(yMax-xMin))
 
 	lazy := 0
 
@@ -73,7 +76,7 @@ func GetImageDiff(oldImage image.RGBA, newImage image.RGBA) []PixelDiff {
 	yMax := bounds.Max.Y
 	yMin := bounds.Min.Y
 
-	diffs := make([]PixelDiff, (xMax-xMin)*(yMin-xMax))
+	diffs := make([]PixelDiff, (xMax-xMin)*(yMax-xMin))
 
 	lazy := 0
 
@@ -100,7 +103,7 @@ func CreateCommit(changes []PixelDiff) uuid.UUID {
 		PixelChanges: changes,
 		Timestamp:    time.Now(),
 	}
-	commits.Diffs[commitId] = newCommit
+	commits.Diffs[commitId] = &newCommit
 	return commitId
 }
 

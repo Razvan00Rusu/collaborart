@@ -4,28 +4,40 @@ import (
 	"collaborart/backend/composedImage"
 	"collaborart/backend/vcs"
 	"image"
-	"image/jpeg"
+	"image/draw"
 	"log"
 )
 
 func PushToBranch(branchId string, imageFile *image.Image) {
-	img, _ := jpeg.Decode(imageFile)
-	var imgRGB image.RGBA
-	if x, ok := img.(*image.RGBA); ok {
-		imgRGB = *x
-	}
+
+	b := (*imageFile).Bounds()
+	imgRGB := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
+	draw.Draw(imgRGB, imgRGB.Bounds(), *imageFile, b.Min, draw.Src)
 
 	if vcs.BranchExists(branchId) {
 		branch, _ := vcs.GetBranch(branchId)
 		var diffs []vcs.PixelDiff
 		if len(branch.Commits) != 0 {
+			log.Printf("Old branch!")
 			prevImg := composedImage.New(branch)
-			diffs = vcs.GetImageDiff(prevImg.Img, imgRGB)
+			diffs = vcs.GetImageDiff(prevImg.Img, *imgRGB)
 		} else {
-			diffs = vcs.CreateInitialDiff(imgRGB)
+			log.Printf("New branch!")
+			diffs = vcs.CreateInitialDiff(*imgRGB)
+
+			bounds := imgRGB.Bounds()
+			xMax := bounds.Max.X
+			xMin := bounds.Min.X
+			yMax := bounds.Max.Y
+			yMin := bounds.Min.Y
+
+			branch.Width = int16((xMax - xMin))
+			branch.Height = int16(yMax - yMin)
 		}
 
 		branch.AddCommit(diffs)
+
+		log.Printf("Branch actually expanded? %d, %s", len(branch.Commits), branch.Name)
 	} else {
 		vcs.CreateOrphanBranch(branchId)
 	}
