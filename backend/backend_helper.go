@@ -21,6 +21,7 @@ func PushToBranch(branchId string, imageFile *image.Image) {
 			log.Printf("Old branch!")
 			prevImg := composedImage.New(branch)
 			diffs = vcs.GetImageDiff(prevImg.Img, *imgRGB)
+			log.Printf("Length of pixel diffs %d", len(diffs))
 		} else {
 			log.Printf("New branch!")
 			diffs = vcs.CreateInitialDiff(*imgRGB)
@@ -65,29 +66,33 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 	}
 }
 
-//func Merge(from string, into string) {
-//	// Find common commit
-//	fromBranch, err := vcs.GetBranch(from)
-//	if err != nil {
-//		return
-//	}
-//	toBranch, err := vcs.GetBranch(into)
-//	if err != nil {
-//		return
-//	}
-//	fromCommits := fromBranch.Commits
-//	toCommits := toBranch.Commits
-//	i := 0
-//	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
-//		i++
-//	}
-//	commitsTheirs := fromCommits[i:]
-//	changesTheirs := vcs.SquashCommitsToPixelChanges(commitsTheirs)
-//	commitsOurs := toCommits[i:]
-//	changesOurs := vcs.SquashCommitsToPixelChanges(commitsOurs)
-//	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
-//
-//}
+func Merge(from string, into string) {
+	// Find common commit
+	fromBranch, err := vcs.GetBranch(from)
+	if err != nil {
+		return
+	}
+	toBranch, err := vcs.GetBranch(into)
+	if err != nil {
+		return
+	}
+	fromCommits := fromBranch.Commits
+	toCommits := toBranch.Commits
+	i := 0
+	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
+		i++
+	}
+	commitsTheirs := fromCommits[i:]
+	changesTheirs := vcs.SquashCommitsToPixelChanges(commitsTheirs)
+	log.Printf("Theirs has %d new commits with %d ", len(commitsTheirs), len(changesTheirs))
+	commitsOurs := toCommits[i:]
+	changesOurs := vcs.SquashCommitsToPixelChanges(commitsOurs)
+	log.Printf("Ours has %d new commits with %d", len(commitsOurs), len(changesOurs))
+	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
+	log.Printf("Theirs, Ours, Okay pixel changes: %d, %d, %d", len(theirDiff), len(ourDiff), len(okayDiff))
+	toBranch.AddCommit(okayDiff)
+
+}
 
 func GetBranchNames() []string {
 	var branches = vcs.GetBranchHolder()

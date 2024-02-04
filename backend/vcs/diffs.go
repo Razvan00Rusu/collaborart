@@ -76,7 +76,7 @@ func GetImageDiff(oldImage image.RGBA, newImage image.RGBA) []PixelDiff {
 	xMin := bounds.Min.X
 	yMax := bounds.Max.Y
 	yMin := bounds.Min.Y
-
+	log.Printf("%d, %d, %d, %d", xMax, xMin, yMax, yMin)
 	diffs := make([]PixelDiff, (xMax-xMin)*(yMax-xMin))
 
 	lazy := 0

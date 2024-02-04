@@ -16,7 +16,8 @@ func New(branch *vcs.Branch) composedImage {
 	// TODO: build the image with size from the branch
 	picture := image.NewRGBA(image.Rect(0, 0, int(branch.Width), int(branch.Height)))
 
-	log.Printf("Image combosed from branch? %d, %s", len(branch.Commits), branch.Name)
+	branchDiffs := branch.GetDiffsInBranch()
+	log.Printf("Image combosed from branch? %d, %s, %d, %d", len(branch.Commits), branch.Name, len(branchDiffs), len(branchDiffs[0].PixelChanges))
 
 	for _, change := range branch.GetDiffsInBranch() {
 

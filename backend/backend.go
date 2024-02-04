@@ -136,7 +136,8 @@ func StartServer() {
 		}
 
 		CreateNewBranch(newBranchName, oldBranchName)
-		log.Println("Created new branch:", newBranchName, "From branch:", oldBranchName)
+		newbr, _ := vcs.GetBranch(newBranchName)
+		log.Println("Created new branch:", newBranchName, "From branch:", oldBranchName, "New Branch num commits:", len(newbr.Commits))
 		c.Response().Header().Add("HX-Refresh", "true")
 		return c.String(http.StatusCreated, "")
 	})
