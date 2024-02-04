@@ -1,7 +1,8 @@
 {{define "new_branch_settings"}}
 <form
     hx-post="/branch/create_new_branch"
-    hx-target="#settings"
+    hx-target="#body"
+    hx-push-url="true"
 >
     <input id="branchId" name="old_branch" class="hidden" value="{{ .BranchName }}" >
     <div class="mb-6">
