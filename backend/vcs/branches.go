@@ -6,9 +6,9 @@ import (
 )
 
 type Branch struct {
-	Name          string
-	Commits       []uuid.UUID
-	CommitOrder   map[uuid.UUID]int
+	Name    string
+	Commits []uuid.UUID
+	//CommitOrder   map[uuid.UUID]int
 	Width, Height int16
 }
 
@@ -39,36 +39,37 @@ func CreateNewBranch(name string, currentBranch string) {
 
 func (b *Branch) GetName() string              { return b.Name }
 func (b *Branch) GetCommit(idx uint) uuid.UUID { return b.Commits[idx] }
-func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
-	var ret = make([]uuid.UUID, 0)
 
-	if from == to {
-		return append(ret, from)
-	}
-
-	var fromNum = b.CommitOrder[from]
-	var toNum = b.CommitOrder[to]
-	var first = min(fromNum, toNum)
-	var last = max(fromNum, toNum)
-	return b.Commits[first : last+1]
-}
+//	func (b *Branch) GetCommitsRange(from uuid.UUID, to uuid.UUID) []uuid.UUID {
+//		var ret = make([]uuid.UUID, 0)
+//
+//		if from == to {
+//			return append(ret, from)
+//		}
+//
+//		var fromNum = b.CommitOrder[from]
+//		var toNum = b.CommitOrder[to]
+//		var first = min(fromNum, toNum)
+//		var last = max(fromNum, toNum)
+//		return b.Commits[first : last+1]
+//	}
 func (b *Branch) AddCommit(changes []PixelDiff) {
 	var newCommitId = CreateCommit(changes)
 	b.Commits = append(b.Commits, newCommitId)
-	b.CommitOrder[newCommitId] = len(b.Commits)
+	//b.CommitOrder[newCommitId] = len(b.Commits)
 }
 func (b *Branch) Clone(newName string) *Branch {
 	var br = &Branch{
-		CommitOrder: map[uuid.UUID]int{},
-		Commits:     make([]uuid.UUID, len(b.Commits)),
-		Width:       b.Width,
-		Height:      b.Height,
+		//CommitOrder: map[uuid.UUID]int{},
+		Commits: make([]uuid.UUID, len(b.Commits)),
+		Width:   b.Width,
+		Height:  b.Height,
 	}
 	br.Name = newName
 	copy(br.Commits, b.Commits)
-	for k, v := range b.CommitOrder {
-		br.CommitOrder[k] = v
-	}
+	//for k, v := range b.CommitOrder {
+	//	br.CommitOrder[k] = v
+	//}
 	return br
 }
 func (b *Branch) GetDiffsInBranch() []Diff {
@@ -100,11 +101,11 @@ func CreateOrphanBranch(name string) {
 	}
 	var branches = GetBranchHolder()
 	var mainBranch = Branch{
-		Name:        name,
-		Commits:     make([]uuid.UUID, 0),
-		CommitOrder: map[uuid.UUID]int{},
-		Width:       0,
-		Height:      0,
+		Name:    name,
+		Commits: make([]uuid.UUID, 0),
+		//CommitOrder: map[uuid.UUID]int{},
+		Width:  0,
+		Height: 0,
 	}
 	branches.Branches[name] = &mainBranch
 }

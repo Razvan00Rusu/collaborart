@@ -86,6 +86,7 @@ func GetImageDiff(oldImage image.RGBA, newImage image.RGBA) []PixelDiff {
 			r1, g1, b1, a1 := oldImage.At(x, y).RGBA()
 			r2, g2, b2, a2 := newImage.At(x, y).RGBA()
 			if r1 != r2 || g1 != g2 || b1 != b2 || a1 != a2 {
+				//log.Printf("Old image: %d, %d, %d, %d, New image: %d, %d, %d, %d:", r1, g1, b1, a1, r2, g2, b2, a2)
 				diffs[lazy] = PixelDiff{int16(x), int16(y), int16(r2), int16(g2), int16(b2), int16(a2)}
 				lazy++
 			}
@@ -146,29 +147,23 @@ func AnalyseChanges(theirs []PixelDiff, ours []PixelDiff) ([]PixelDiff, []PixelD
 			v, ok := mapTheirs[thing]
 			if ok {
 				theirConflicts = append(theirConflicts, v)
+				delete(mapTheirs, thing)
 			}
-			v2, ok2 := mapTheirs[thing]
+			v2, ok2 := mapOurs[thing]
 			if ok2 {
 				ourConflicts = append(ourConflicts, v2)
+				delete(mapOurs, thing)
 			}
 		}
 	})
 
 	noConflictsPixels := make([]PixelDiff, 0)
-	nonConflicts := setTheirs.Difference(setOurs)
-	nonConflicts.Do(func(pt interface{}) {
-		switch thing := pt.(type) {
-		case Point:
-			v, ok := mapTheirs[thing]
-			if ok {
-				noConflictsPixels = append(theirConflicts, v)
-			}
-			v2, ok2 := mapTheirs[thing]
-			if ok2 {
-				noConflictsPixels = append(ourConflicts, v2)
-			}
-		}
-	})
+	for _, v := range mapTheirs {
+		noConflictsPixels = append(noConflictsPixels, v)
+	}
+	for _, v := range mapOurs {
+		noConflictsPixels = append(noConflictsPixels, v)
+	}
 
 	return theirConflicts, ourConflicts, noConflictsPixels
 

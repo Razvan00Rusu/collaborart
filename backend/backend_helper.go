@@ -4,6 +4,7 @@ import (
 	"collaborart/backend/composedImage"
 	"collaborart/backend/vcs"
 	"fmt"
+	"github.com/google/uuid"
 	"image"
 	"image/draw"
 	"log"
@@ -67,7 +68,11 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 	}
 }
 
-func Merge(from string, into string) {
+func MergePreview(from string, into string) ([]vcs.Diff, []vcs.Diff) {
+
+}
+
+func Merge(from string, into string, useTheirs bool) {
 	// Find common commit
 	fromBranch, err := vcs.GetBranch(from)
 	if err != nil {
@@ -78,7 +83,8 @@ func Merge(from string, into string) {
 		return
 	}
 	fromCommits := fromBranch.Commits
-	toCommits := toBranch.Commits
+	toCommits := make([]uuid.UUID, len(toBranch.Commits))
+	copy(toCommits, toBranch.Commits)
 	i := 0
 	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
 		i++
@@ -88,10 +94,15 @@ func Merge(from string, into string) {
 	log.Printf("Theirs has %d new commits with %d ", len(commitsTheirs), len(changesTheirs))
 	commitsOurs := toCommits[i:]
 	changesOurs := vcs.SquashCommitsToPixelChanges(commitsOurs)
-	log.Printf("Ours has %d new commits with %d", len(commitsOurs), len(changesOurs))
+	log.Printf("Ours has %d new commits with %d ", len(commitsOurs), len(changesOurs))
 	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
 	log.Printf("Theirs, Ours, Okay pixel changes: %d, %d, %d", len(theirDiff), len(ourDiff), len(okayDiff))
+	//toBranch.AddCommit(theirDiff)
+
+	toBranch.Commits = toCommits[:i]
+
 	toBranch.AddCommit(okayDiff)
+	toBranch.AddCommit(theirDiff)
 
 }
 
