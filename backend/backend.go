@@ -139,12 +139,12 @@ func StartServer() {
 		var mergedImage composedImage.ComposedImage
 
 		if preference == "from" {
-			mergedImage := composedImage.New(
+			mergedImage = composedImage.New(
 				int(targetBranch.Width),
 				int(targetBranch.Height),
 				mergedKeepFrom)
 		} else if preference == "to" {
-			mergedImage := composedImage.New(
+			mergedImage = composedImage.New(
 				int(targetBranch.Width),
 				int(targetBranch.Height),
 				mergedKeepTo)
