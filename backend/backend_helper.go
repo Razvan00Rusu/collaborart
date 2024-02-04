@@ -87,10 +87,10 @@ func Merge(from string, into string) {
 	log.Printf("Theirs has %d new commits with %d ", len(commitsTheirs), len(changesTheirs))
 	commitsOurs := toCommits[i:]
 	changesOurs := vcs.SquashCommitsToPixelChanges(commitsOurs)
-	log.Printf("Ours has %d new commits with %d", len(commitsOurs), len(changesOurs))
-	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
-	log.Printf("Theirs, Ours, Okay pixel changes: %d, %d, %d", len(theirDiff), len(ourDiff), len(okayDiff))
-	toBranch.AddCommit(okayDiff)
+	log.Printf("Ours has %d new commits with %d ", len(commitsOurs), len(changesOurs))
+	//theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
+	//log.Printf("Theirs, Ours, Okay pixel changes: %d, %d, %d", len(theirDiff), len(ourDiff), len(okayDiff))
+	toBranch.AddCommit(changesTheirs)
 
 }
 
