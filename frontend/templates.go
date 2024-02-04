@@ -21,6 +21,9 @@ func NewTemplateRenderer(e *echo.Echo, paths ...string) {
 			"add": func(a, b int) int {
 				return a + b
 			},
+			"isEqual": func(a, b string) bool {
+				return a == b
+			},
 		},
 	)
 	for i := range paths {

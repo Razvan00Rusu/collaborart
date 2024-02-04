@@ -3,6 +3,7 @@ package backend
 import (
 	"collaborart/backend/composedImage"
 	"collaborart/backend/vcs"
+	"fmt"
 	"image"
 	"image/draw"
 	"log"
@@ -96,11 +97,13 @@ func Merge(from string, into string) {
 
 func GetBranchNames() []string {
 	var branches = vcs.GetBranchHolder()
-	var branchNames = make([]string, len(branches.Branches))
+	var branchNames []string
+	fmt.Println(branches.Branches)
 	i := 0
 	for k := range branches.Branches {
-		branchNames[i] = k
+		branchNames = append(branchNames, k)
 		i++
 	}
+	log.Println(branchNames)
 	return branchNames
 }
