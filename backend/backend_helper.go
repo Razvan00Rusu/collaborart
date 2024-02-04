@@ -69,7 +69,30 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 }
 
 func MergePreview(from string, into string) ([]vcs.Diff, []vcs.Diff) {
+	fromBranch, err := vcs.GetBranch(from)
+	if err != nil {
+		return []vcs.Diff{}, []vcs.Diff{}
+	}
+	toBranch, err := vcs.GetBranch(into)
+	if err != nil {
+		return []vcs.Diff{}, []vcs.Diff{}
+	}
+	toCommits, i, theirDiff, okayDiff, ourDiff := doMerge(fromBranch, toBranch)
 
+	commonCommits := toCommits[:i]
+
+	var diffsTheirs = make([]vcs.Diff, 0)
+	var diffsOurs = make([]vcs.Diff, 0)
+	for _, v := range commonCommits {
+		diffsTheirs = append(diffsTheirs, *vcs.GetDiff(v))
+		diffsOurs = append(diffsOurs, *vcs.GetDiff(v))
+	}
+	diffsTheirs = append(diffsTheirs, vcs.Diff{Commit: uuid.New(), PixelChanges: okayDiff})
+	diffsOurs = append(diffsOurs, vcs.Diff{Commit: uuid.New(), PixelChanges: okayDiff})
+	diffsTheirs = append(diffsTheirs, vcs.Diff{Commit: uuid.New(), PixelChanges: theirDiff})
+	diffsOurs = append(diffsOurs, vcs.Diff{Commit: uuid.New(), PixelChanges: ourDiff})
+
+	return diffsTheirs, diffsOurs
 }
 
 func Merge(from string, into string, useTheirs bool) {
@@ -82,6 +105,20 @@ func Merge(from string, into string, useTheirs bool) {
 	if err != nil {
 		return
 	}
+	toCommits, i, theirDiff, okayDiff, ourDiff := doMerge(fromBranch, toBranch)
+
+	toBranch.Commits = toCommits[:i]
+
+	toBranch.AddCommit(okayDiff)
+	if useTheirs {
+		toBranch.AddCommit(theirDiff)
+	} else {
+		toBranch.AddCommit(ourDiff)
+	}
+
+}
+
+func doMerge(fromBranch *vcs.Branch, toBranch *vcs.Branch) ([]uuid.UUID, int, []vcs.PixelDiff, []vcs.PixelDiff, []vcs.PixelDiff) {
 	fromCommits := fromBranch.Commits
 	toCommits := make([]uuid.UUID, len(toBranch.Commits))
 	copy(toCommits, toBranch.Commits)
@@ -97,13 +134,7 @@ func Merge(from string, into string, useTheirs bool) {
 	log.Printf("Ours has %d new commits with %d ", len(commitsOurs), len(changesOurs))
 	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
 	log.Printf("Theirs, Ours, Okay pixel changes: %d, %d, %d", len(theirDiff), len(ourDiff), len(okayDiff))
-	//toBranch.AddCommit(theirDiff)
-
-	toBranch.Commits = toCommits[:i]
-
-	toBranch.AddCommit(okayDiff)
-	toBranch.AddCommit(theirDiff)
-
+	return toCommits, i, theirDiff, okayDiff, ourDiff
 }
 
 func GetBranchNames() []string {

@@ -6,7 +6,6 @@ import (
 	"image"
 	"log"
 	"sync"
-	"time"
 )
 
 type PixelDiff struct {
@@ -16,7 +15,6 @@ type PixelDiff struct {
 type Diff struct {
 	Commit       uuid.UUID
 	PixelChanges []PixelDiff
-	Timestamp    time.Time
 }
 
 var lock = &sync.Mutex{}
@@ -103,7 +101,6 @@ func CreateCommit(changes []PixelDiff) uuid.UUID {
 	var newCommit = Diff{
 		Commit:       commitId,
 		PixelChanges: changes,
-		Timestamp:    time.Now(),
 	}
 	commits.Diffs[commitId] = &newCommit
 	return commitId
