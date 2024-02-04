@@ -16,13 +16,15 @@ func New(branch *vcs.Branch) composedImage {
 	// TODO: build the image with size from the branch
 	picture := image.NewRGBA(image.Rect(0, 0, int(branch.Width), int(branch.Height)))
 
+	log.Printf("Image combosed from branch? %d, %s", len(branch.Commits), branch.Name)
+
 	for _, change := range branch.GetDiffsInBranch() {
 
-		log.Printf("A change")
+		//log.Printf("A change")
 
 		for _, diff := range change.PixelChanges {
 
-			log.Printf("A diff")
+			//log.Printf("A diff")
 
 			// I think there will be an issue with Alpha, but just ignore
 			x := int(diff.X)

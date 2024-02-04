@@ -14,7 +14,7 @@ type Branch struct {
 }
 
 type BranchHolder struct {
-	Branches map[string]Branch
+	Branches map[string]*Branch
 }
 
 var branchHolderInstance *BranchHolder
@@ -24,7 +24,7 @@ func GetBranchHolder() *BranchHolder {
 		lock.Lock()
 		defer lock.Unlock()
 		if branchHolderInstance == nil {
-			branchHolderInstance = &BranchHolder{make(map[string]Branch)}
+			branchHolderInstance = &BranchHolder{make(map[string]*Branch)}
 		}
 	}
 	return branchHolderInstance
@@ -32,11 +32,9 @@ func GetBranchHolder() *BranchHolder {
 
 func CreateNewBranch(name string, currentBranch string) {
 	var branches = GetBranchHolder()
-	log.Println("got branch holder", branches)
 	val, currOk := branches.Branches[currentBranch]
-	log.Println("got branches", val, currOk)
 	if currOk {
-		branches.Branches[name] = *val.Clone(name)
+		branches.Branches[name] = val.Clone(name)
 	}
 }
 
@@ -76,7 +74,7 @@ func (b *Branch) Clone(newName string) *Branch {
 func (b *Branch) GetDiffsInBranch() []Diff {
 	var diffs = make([]Diff, 0)
 	for _, v := range b.Commits {
-		diffs = append(diffs, GetDiff(v))
+		diffs = append(diffs, *GetDiff(v))
 	}
 	return diffs
 }
@@ -91,7 +89,7 @@ func GetBranch(name string) (*Branch, error) {
 	var branches = GetBranchHolder()
 	var b, ok = branches.Branches[name]
 	if ok {
-		return &b, nil
+		return b, nil
 	}
 	return nil, errors.New("branch does not exist")
 }
@@ -108,5 +106,5 @@ func CreateOrphanBranch(name string) {
 		Width:       0,
 		Height:      0,
 	}
-	branches.Branches[name] = mainBranch
+	branches.Branches[name] = &mainBranch
 }

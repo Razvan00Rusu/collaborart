@@ -74,7 +74,7 @@ func StartServer() {
 			return err
 		}
 
-		fmt.Println(img, str, err)
+		//fmt.Println(img, str, err)
 
 		log.Println("Info!!!", img.Bounds(), str, err)
 		PushToBranch(branchName, &img)
@@ -156,7 +156,7 @@ func StartServer() {
 
 		target := composedImage.New(branchDetails)
 
-		fmt.Println("target Img", target.Img)
+		//fmt.Println("target Img", target.Img)
 
 		//c.Response().Header().Set("Content-Type", "image/jpeg")
 		buf := new(bytes.Buffer)
@@ -165,7 +165,7 @@ func StartServer() {
 		}
 		image := buf.Bytes()
 		imgBase64Str := base64.StdEncoding.EncodeToString(image)
-		fmt.Println("base64 encoding", imgBase64Str)
+		//fmt.Println("base64 encoding", imgBase64Str)
 
 		params := map[string]interface{}{
 			"Encoding": imgBase64Str,
