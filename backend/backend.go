@@ -11,7 +11,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 )
 
 func StartServer() {
@@ -110,40 +109,27 @@ func StartServer() {
 
 	e.GET("/branch/preview", func(c echo.Context) error {
 		branchId := c.QueryParam("branchId")
-
+		log.Println("Branch id", branchId)
 		if branchId == "" {
 			return c.String(http.StatusInternalServerError, "Missing branch id")
 		}
 
-		// TODO: Get the image to the client somehow - can be either as a byte array or straight from a file
-		return c.String(http.StatusNotImplemented, "Not implemented yet : )")
+		branch := vcs.GetBranch(branchId)
+
+		target := composedImage.New(branch)
+
+		w := c.Response().Writer
+
+		if err := jpeg.Encode(w, &target.Img, &jpeg.Options{Quality: 100}); err != nil {
+			log.Printf("failed to encode: %v", err)
+		}
+
+		return c.String(http.StatusOK, "")
 	})
 
 	e.Static("/public", "./frontend/public")
 
 	frontend.NewTemplateRenderer(e, "./frontend/templates/*.html")
-
-	log.Printf("before")
-	f, err := os.Create("img.jpg")
-	log.Printf("after")
-
-	vcs.CreateOrphanBranch("test")
-	var branches = vcs.GetBranchHolder()
-	branch := vcs.GetBranch("test")
-	pxDiff := vcs.PixelDiff{X: 1, Y: 1, DR: 255, DG: 255, DB: 255}
-	branch.AddCommit(append(make([]vcs.PixelDiff, 0), pxDiff))
-
-	target := composedImage.New(branches.Branches["test"])
-
-	if err != nil {
-		panic(err)
-	}
-
-	if err = jpeg.Encode(f, &target.Img, nil); err != nil {
-		log.Printf("failed to encode: %v", err)
-	}
-
-	f.Close()
 
 	e.Logger.Fatal(e.Start(":8000"))
 }
