@@ -3,7 +3,6 @@ package vcs
 import (
 	"errors"
 	"github.com/google/uuid"
-	"log"
 )
 
 type Branch struct {
@@ -61,14 +60,15 @@ func (b *Branch) AddCommit(changes []PixelDiff) {
 func (b *Branch) Clone(newName string) *Branch {
 	var br = &Branch{
 		CommitOrder: map[uuid.UUID]int{},
+		Commits:     make([]uuid.UUID, len(b.Commits)),
+		Width:       b.Width,
+		Height:      b.Height,
 	}
 	br.Name = newName
 	copy(br.Commits, b.Commits)
-	log.Println("Before copy map")
 	for k, v := range b.CommitOrder {
 		br.CommitOrder[k] = v
 	}
-	log.Println("After copy map")
 	return br
 }
 func (b *Branch) GetDiffsInBranch() []Diff {
