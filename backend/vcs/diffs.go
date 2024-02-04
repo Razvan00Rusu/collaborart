@@ -86,7 +86,7 @@ func GetImageDiff(oldImage image.RGBA, newImage image.RGBA) []PixelDiff {
 			r1, g1, b1, a1 := oldImage.At(x, y).RGBA()
 			r2, g2, b2, a2 := newImage.At(x, y).RGBA()
 			if r1 != r2 || g1 != g2 || b1 != b2 || a1 != a2 {
-				log.Printf("Old image: %d, %d, %d, %d, New image: %d, %d, %d, %d:", r1, g1, b1, a1, r2, g2, b2, a2)
+				//log.Printf("Old image: %d, %d, %d, %d, New image: %d, %d, %d, %d:", r1, g1, b1, a1, r2, g2, b2, a2)
 				diffs[lazy] = PixelDiff{int16(x), int16(y), int16(r2), int16(g2), int16(b2), int16(a2)}
 				lazy++
 			}
