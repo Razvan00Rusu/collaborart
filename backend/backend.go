@@ -111,6 +111,25 @@ func StartServer() {
 		return c.Render(http.StatusOK, "new_branch_settings", params)
 	})
 
+	e.GET("/branch/checkout_commit_settings", func(c echo.Context) error {
+		branchName := c.QueryParam("bid")
+		log.Println("Branch name:", branchName)
+		params := map[string]interface{}{
+			"BranchName": branchName,
+			"Commits":    []string{},
+		}
+		return c.Render(http.StatusOK, "checkout_commit_settings", params)
+	})
+
+	e.POST("/branch/checkout_commit", func(c echo.Context) error {
+		commitId := c.FormValue("checkout_commit")
+
+		params := map[string]interface{}{
+			"Encoding": imgBase64Str,
+		}
+		return c.Render(http.StatusOK, "preview", params)
+	})
+
 	e.GET("/branch/upload_image_settings", func(c echo.Context) error {
 		branchName := c.QueryParam("bid")
 		log.Println("Branch name:", branchName)
