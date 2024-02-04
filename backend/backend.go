@@ -128,19 +128,17 @@ func StartServer() {
 	e.POST("/branch/checkout_commit", func(c echo.Context) error {
 		commitId := c.FormValue("checkout_commit")
 		bid := c.FormValue("branchId")
-
-		//branch, err := vcs.GetBranch(bid)
-
-		//if err != nil {
-		//	return c.String(http.StatusBadRequest, "")
-		//
-		//}
+		direction := c.FormValue("checkout_direction")
 
 		if commitId == "" {
 			return c.String(http.StatusBadRequest, "")
 		}
-
-		composedImage := CheckoutCommit(bid, uuid.MustParse(commitId))
+		var composedImage composedImage.ComposedImage
+		if direction == "from" {
+			composedImage = CheckoutCommit(bid, uuid.MustParse(commitId), true)
+		} else {
+			composedImage = CheckoutCommit(bid, uuid.MustParse(commitId), false)
+		}
 
 		buf := new(bytes.Buffer)
 		if err := png.Encode(buf, &composedImage.Img); err != nil {
