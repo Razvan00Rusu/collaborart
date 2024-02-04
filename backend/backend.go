@@ -160,7 +160,7 @@ func StartServer() {
 		newbr, _ := vcs.GetBranch(newBranchName)
 		log.Println("Created new branch:", newBranchName, "From branch:", oldBranchName, "New Branch num commits:", len(newbr.Commits))
 		c.Response().Header().Add("HX-Refresh", "true")
-		return c.String(http.StatusCreated, "")
+		return c.Redirect(http.StatusSeeOther, "/branch?bid="+newBranchName)
 	})
 
 	e.GET("/branch/preview", func(c echo.Context) error {
