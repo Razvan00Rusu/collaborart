@@ -8,9 +8,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"golang.org/x/time/rate"
 	"image/jpeg"
-	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 func StartServer() {
@@ -46,16 +46,19 @@ func StartServer() {
 	})
 
 	e.POST("/branch/upload", func(c echo.Context) error {
+		//TODO: Get branch main
+		branchName := "main"
+
 		file, err := c.FormFile("file")
 		if err != nil {
 			return err
 		}
-		src, err := file.Open()
-		if err != nil {
-			return err
-		}
-		byteContainer, err := io.ReadAll(src)
-		log.Println(len(byteContainer))
+		//src, err := file.Open()
+		//if err != nil {
+		//	return err
+		//}
+		imgFile, err := os.Create(file.Filename)
+		PushToBranch(branchName, imgFile)
 		return c.String(http.StatusOK, "")
 	})
 
@@ -69,7 +72,7 @@ func StartServer() {
 
 	e.GET("/branch/merge_branch_settings", func(c echo.Context) error {
 		//TODO: Get branches!!
-		branches := []string{"main"}
+		branches := GetBranchNames()
 		params := map[string]interface{}{
 			"Branches": branches,
 		}
@@ -96,6 +99,8 @@ func StartServer() {
 	})
 
 	e.POST("/branch/create_new_branch", func(c echo.Context) error {
+		//TODO: Get current branch in request!
+		currentBranchName := "main"
 		branchName := c.FormValue("branch_name")
 
 		if branchName == "" {
@@ -103,7 +108,8 @@ func StartServer() {
 		}
 
 		//TODO: Create new branch
-		log.Println("Create new branch!", branchName)
+		CreateNewBranch(branchName, currentBranchName)
+		log.Println("Created new branch:", branchName, "From branch:", currentBranchName)
 		return c.String(http.StatusCreated, "")
 	})
 

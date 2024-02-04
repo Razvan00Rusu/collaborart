@@ -2,16 +2,17 @@ package backend
 
 import (
 	"collaborart/backend/vcs"
+	"os"
 )
 
-//func PushToBranch(branch string, image []byte) {
-//	if vcs.BranchExists(branch) {
-//		var changes []vcs.PixelDiff = // TODO Get diff between this image and tip of branch
-//
-//	} else {
-//		vcs.CreateOrphanBranch(branch)
-//	}
-//}
+func PushToBranch(branch string, image *os.File) {
+	if vcs.BranchExists(branch) {
+		//var changes []vcs.PixelDiff = // TODO Get diff between this image and tip of branch
+
+	} else {
+		vcs.CreateOrphanBranch(branch)
+	}
+}
 
 //func CheckoutCommit(branch string, commit uuid.UUID) []byte {
 //
