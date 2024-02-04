@@ -1,7 +1,9 @@
 package vcs
 
 import (
+	"errors"
 	"github.com/google/uuid"
+	"log"
 )
 
 type Branch struct {
@@ -30,7 +32,9 @@ func GetBranchHolder() *BranchHolder {
 
 func CreateNewBranch(name string, currentBranch string) {
 	var branches = GetBranchHolder()
+	log.Println("got branch holder", branches)
 	val, currOk := branches.Branches[currentBranch]
+	log.Println("got branches", val, currOk)
 	if currOk {
 		branches.Branches[name] = *val.Clone(name)
 	}
@@ -57,12 +61,16 @@ func (b *Branch) AddCommit(changes []PixelDiff) {
 	b.CommitOrder[newCommitId] = len(b.Commits)
 }
 func (b *Branch) Clone(newName string) *Branch {
-	var br = &Branch{}
+	var br = &Branch{
+		CommitOrder: map[uuid.UUID]int{},
+	}
 	br.Name = newName
 	copy(br.Commits, b.Commits)
+	log.Println("Before copy map")
 	for k, v := range b.CommitOrder {
 		br.CommitOrder[k] = v
 	}
+	log.Println("After copy map")
 	return br
 }
 func (b *Branch) GetDiffsInBranch() []Diff {
@@ -79,13 +87,13 @@ func BranchExists(name string) bool {
 	return ok
 }
 
-func GetBranch(name string) *Branch {
+func GetBranch(name string) (*Branch, error) {
 	var branches = GetBranchHolder()
 	var b, ok = branches.Branches[name]
 	if ok {
-		return &b
+		return &b, nil
 	}
-	return nil
+	return nil, errors.New("branch does not exist")
 }
 
 func CreateOrphanBranch(name string) {

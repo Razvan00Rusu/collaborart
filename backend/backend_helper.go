@@ -5,6 +5,7 @@ import (
 	"collaborart/backend/vcs"
 	"image"
 	"image/jpeg"
+	"log"
 	"os"
 )
 
@@ -16,7 +17,7 @@ func PushToBranch(branchId string, imageFile *os.File) {
 	}
 
 	if vcs.BranchExists(branchId) {
-		branch := vcs.GetBranch(branchId)
+		branch, _ := vcs.GetBranch(branchId)
 		var diffs []vcs.PixelDiff
 		if len(branch.Commits) != 0 {
 			prevImg := composedImage.New(branch)
@@ -36,13 +37,26 @@ func PushToBranch(branchId string, imageFile *os.File) {
 //}
 
 func CreateNewBranch(newBranch string, currentBranch string) {
-	vcs.CreateNewBranch(newBranch, currentBranch)
+	_, found := vcs.GetBranch(currentBranch)
+	if found == nil {
+		log.Println("creating new branch")
+		vcs.CreateNewBranch(newBranch, currentBranch)
+	} else {
+		log.Println("creating orphan branch")
+		vcs.CreateOrphanBranch(newBranch)
+	}
 }
 
 func Merge(from string, into string) {
 	// Find common commit
-	fromBranch := vcs.GetBranch(from)
-	toBranch := vcs.GetBranch(into)
+	fromBranch, err := vcs.GetBranch(from)
+	if err != nil {
+		return
+	}
+	toBranch, err := vcs.GetBranch(into)
+	if err != nil {
+		return
+	}
 	fromCommits := fromBranch.Commits
 	toCommits := toBranch.Commits
 	i := 0
