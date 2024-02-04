@@ -35,6 +35,13 @@ func PushToBranch(branchId string, imageFile *image.Image) {
 //
 //}
 
+//func ViewDiff(branchName string, firstCommit uuid.UUID, lastCommit uuid.UUID) []byte {
+//	branch := vcs.GetBranch(branchName)
+//	commits := branch.GetCommitsRange(firstCommit, lastCommit)
+//	pixelDiffs := vcs.SquashCommitsToPixelChanges(commits)
+//	// TODO Render pixel diffs and send back
+//}
+
 func CreateNewBranch(newBranch string, currentBranch string) {
 	_, found := vcs.GetBranch(currentBranch)
 	if found == nil {
