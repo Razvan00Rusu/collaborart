@@ -1,6 +1,7 @@
 package vcs
 
 import (
+	"github.com/golang-collections/collections/set"
 	"github.com/google/uuid"
 	"image"
 	"sync"
@@ -111,4 +112,61 @@ func SquashCommitsToPixelChanges(commits []uuid.UUID) []PixelDiff {
 		pixelDiffs = append(pixelDiffs, diff.PixelChanges...)
 	}
 	return pixelDiffs
+}
+
+type Point struct {
+	X, Y int16
+}
+
+func AnalyseChanges(theirs []PixelDiff, ours []PixelDiff) ([]PixelDiff, []PixelDiff, []PixelDiff) {
+	mapTheirs := map[Point]PixelDiff{}
+	setTheirs := set.New()
+	for _, v := range theirs {
+		pt := Point{X: v.X, Y: v.Y}
+		setTheirs.Insert(pt)
+		mapTheirs[pt] = v
+	}
+	mapOurs := map[Point]PixelDiff{}
+	setOurs := set.New()
+	for _, v := range ours {
+		pt := Point{X: v.X, Y: v.Y}
+		setOurs.Insert(pt)
+		mapOurs[pt] = v
+	}
+
+	conflicts := setTheirs.Intersection(setOurs)
+	theirConflicts := make([]PixelDiff, 0)
+	ourConflicts := make([]PixelDiff, 0)
+	conflicts.Do(func(pt interface{}) {
+		switch thing := pt.(type) {
+		case Point:
+			v, ok := mapTheirs[thing]
+			if ok {
+				theirConflicts = append(theirConflicts, v)
+			}
+			v2, ok2 := mapTheirs[thing]
+			if ok2 {
+				ourConflicts = append(ourConflicts, v2)
+			}
+		}
+	})
+
+	noConflictsPixels := make([]PixelDiff, 0)
+	nonConflicts := setTheirs.Difference(setOurs)
+	nonConflicts.Do(func(pt interface{}) {
+		switch thing := pt.(type) {
+		case Point:
+			v, ok := mapTheirs[thing]
+			if ok {
+				noConflictsPixels = append(theirConflicts, v)
+			}
+			v2, ok2 := mapTheirs[thing]
+			if ok2 {
+				noConflictsPixels = append(ourConflicts, v2)
+			}
+		}
+	})
+
+	return theirConflicts, ourConflicts, noConflictsPixels
+
 }
