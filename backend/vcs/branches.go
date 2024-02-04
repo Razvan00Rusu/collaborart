@@ -101,11 +101,10 @@ func CreateOrphanBranch(name string) {
 		panic("Branch already exists!")
 	}
 	var branches = GetBranchHolder()
-	var newCommit = CreateCommit(make([]PixelDiff, 0))
 	var mainBranch = Branch{
 		Name:        name,
-		Commits:     append(make([]uuid.UUID, 0), newCommit),
-		CommitOrder: map[uuid.UUID]int{newCommit: 0},
+		Commits:     make([]uuid.UUID, 0),
+		CommitOrder: map[uuid.UUID]int{},
 		Width:       0,
 		Height:      0,
 	}
