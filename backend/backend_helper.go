@@ -21,7 +21,7 @@ func PushToBranch(branchId string, imageFile *image.Image) {
 		var diffs []vcs.PixelDiff
 		if len(branch.Commits) != 0 {
 			log.Printf("Old branch!")
-			prevImg := composedImage.New(branch)
+			prevImg := composedImage.New(int(branch.Width), int(branch.Height), branch.GetDiffsInBranch())
 			diffs = vcs.GetImageDiff(prevImg.Img, *imgRGB)
 			log.Printf("Length of pixel diffs %d", len(diffs))
 		} else {
