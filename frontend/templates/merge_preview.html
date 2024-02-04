@@ -1,0 +1,10 @@
+{{ define "merge_preview" }}
+<h2>Merging from</h2>
+<img src="data:image/jpeg;base64, {{.FromPreview}}">
+<h2>Merging to</h2>
+<img src="data:image/jpeg;base64, {{.ToPreview}}">
+<h3>Prefer merging from "From" branch preview</h3>
+<img src="data:image/jpeg;base64, {{.FromStrategyPreview}}">
+<h3>Prefer merging from "From" branch preview</h3>
+<img src="data:image/jpeg;base64, {{.ToStrategyPreview}}">
+{{end}}
