@@ -65,29 +65,26 @@ func CreateNewBranch(newBranch string, currentBranch string) {
 	}
 }
 
-//func Merge(from string, into string) {
-//	// Find common commit
-//	fromBranch, err := vcs.GetBranch(from)
-//	if err != nil {
-//		return
-//	}
-//	toBranch, err := vcs.GetBranch(into)
-//	if err != nil {
-//		return
-//	}
-//	fromCommits := fromBranch.Commits
-//	toCommits := toBranch.Commits
-//	i := 0
-//	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
-//		i++
-//	}
-//	commitsTheirs := fromCommits[i:]
-//	changesTheirs := vcs.SquashCommitsToPixelChanges(commitsTheirs)
-//	commitsOurs := toCommits[i:]
-//	changesOurs := vcs.SquashCommitsToPixelChanges(commitsOurs)
-//	theirDiff, ourDiff, okayDiff := vcs.AnalyseChanges(changesTheirs, changesOurs)
-//
-//}
+func Merge(from string, into string) {
+	// Find common commit
+	fromBranch, err := vcs.GetBranch(from)
+	if err != nil {
+		return
+	}
+	toBranch, err := vcs.GetBranch(into)
+	if err != nil {
+		return
+	}
+	fromCommits := fromBranch.Commits
+	toCommits := toBranch.Commits
+	i := 0
+	for i < len(fromCommits) && i < len(toCommits) && fromCommits[i] == toCommits[i] {
+		i++
+	}
+	commitsToAdd := fromCommits[i:]
+	changes := vcs.SquashCommitsToPixelChanges(commitsToAdd)
+	toBranch.AddCommit(changes)
+}
 
 func GetBranchNames() []string {
 	var branches = vcs.GetBranchHolder()
