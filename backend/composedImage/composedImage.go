@@ -27,12 +27,11 @@ func New(branch *vcs.Branch) composedImage {
 			// I think there will be an issue with Alpha, but just ignore
 			x := int(diff.X)
 			y := int(diff.Y)
-			oldR, oldG, oldB, oldA := picture.At(x, y).RGBA()
 			newColor := color.RGBA{
-				R: uint8(int16(oldR) + diff.DR),
-				G: uint8(int16(oldG) + diff.DG),
-				B: uint8(int16(oldB) + diff.DB),
-				A: uint8(int16(oldA) + diff.DA),
+				R: uint8(diff.R),
+				G: uint8(diff.G),
+				B: uint8(diff.B),
+				A: uint8(diff.A),
 			}
 
 			picture.Set(
