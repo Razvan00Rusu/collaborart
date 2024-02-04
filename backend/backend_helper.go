@@ -46,7 +46,7 @@ func PushToBranch(branchId string, imageFile *image.Image) {
 	}
 }
 
-func CheckoutCommit(branch string, commit uuid.UUID) []byte {
+func CheckoutCommit(branch string, commit uuid.UUID) composedImage.ComposedImage {
 
 	branchDetails, _ := vcs.GetBranch(branch)
 	diffs := make([]vcs.Diff, 0)
@@ -57,7 +57,7 @@ func CheckoutCommit(branch string, commit uuid.UUID) []byte {
 		diffs = append(diffs, *vcs.GetDiff(v))
 	}
 
-	target := composedImage.New(branchDetails)
+	return composedImage.New(int(branchDetails.Width), int(branchDetails.Height), diffs)
 }
 
 //func ViewDiff(branchName string, firstCommit uuid.UUID, lastCommit uuid.UUID) []byte {
