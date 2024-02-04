@@ -33,8 +33,8 @@ func StartServer() {
 	e.GET("/branch/checkout_new_branch", func(c echo.Context) error {
 		bid := c.QueryParam("bid")
 		log.Println("Checkout new branch", bid)
-		c.Response().Header().Add("HX-Redirect", "/beep?bid="+bid)
-		return c.Redirect(http.StatusSeeOther, "/beep?bid="+bid)
+		c.Response().Header().Add("HX-Redirect", "/branch?bid="+bid)
+		return c.Redirect(http.StatusSeeOther, "/branch?bid="+bid)
 	})
 
 	e.POST("/branch/checkout_branch", func(c echo.Context) error {
