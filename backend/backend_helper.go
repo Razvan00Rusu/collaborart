@@ -1,16 +1,33 @@
 package backend
 
 import (
+	"collaborart/backend/composedImage"
 	"collaborart/backend/vcs"
+	"image"
+	"image/jpeg"
 	"os"
 )
 
-func PushToBranch(branch string, image *os.File) {
-	if vcs.BranchExists(branch) {
-		//var changes []vcs.PixelDiff = // TODO Get diff between this image and tip of branch
+func PushToBranch(branchId string, imageFile *os.File) {
+	img, _ := jpeg.Decode(imageFile)
+	var imgRGB image.RGBA
+	if x, ok := img.(*image.RGBA); ok {
+		imgRGB = *x
+	}
 
+	if vcs.BranchExists(branchId) {
+		branch := vcs.GetBranch(branchId)
+		var diffs []vcs.PixelDiff
+		if len(branch.Commits) != 0 {
+			prevImg := composedImage.New(branch)
+			diffs = vcs.GetImageDiff(prevImg.Img, imgRGB)
+		} else {
+			diffs = vcs.CreateInitialDiff(imgRGB)
+		}
+
+		branch.AddCommit(diffs)
 	} else {
-		vcs.CreateOrphanBranch(branch)
+		vcs.CreateOrphanBranch(branchId)
 	}
 }
 
