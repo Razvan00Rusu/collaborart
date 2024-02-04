@@ -46,15 +46,27 @@ func PushToBranch(branchId string, imageFile *image.Image) {
 	}
 }
 
-func CheckoutCommit(branch string, commit uuid.UUID) composedImage.ComposedImage {
+func CheckoutCommit(branch string, commit uuid.UUID, fromCommit bool) composedImage.ComposedImage {
 
 	branchDetails, _ := vcs.GetBranch(branch)
 	diffs := make([]vcs.Diff, 0)
-	for _, v := range branchDetails.Commits {
-		if v == commit {
-			break
+	if fromCommit {
+		seen := false
+		for _, v := range branchDetails.Commits {
+			if v == commit {
+				seen = true
+			}
+			if seen {
+				diffs = append(diffs, *vcs.GetDiff(v))
+			}
 		}
-		diffs = append(diffs, *vcs.GetDiff(v))
+	} else {
+		for _, v := range branchDetails.Commits {
+			if v == commit {
+				break
+			}
+			diffs = append(diffs, *vcs.GetDiff(v))
+		}
 	}
 
 	return composedImage.New(int(branchDetails.Width), int(branchDetails.Height), diffs)
